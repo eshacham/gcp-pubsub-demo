@@ -1,0 +1,12 @@
+[
+    {"sensor_id": "A001", "temperature": 25.5, "timestamp": "2023-10-27T10:00:00Z"},
+    {"sensor_id": "A002", "temperature": 26.1, "timestamp": "2023-10-27T10:00:05Z"},
+    {"sensor_id": "A003", "humidity": 60.2, "timestamp": "2023-10-27T10:00:10Z"},
+    {"sensor_id": "A004", "temperature": 27.8, "timestamp": "2023-10-27T10:00:15Z"},
+    {"sensor_id": "A005", "humidity": 55.0, "timestamp": "2023-10-27T10:00:20Z"},
+    {"sensor_id": "A006", "temperature": 24.0, "timestamp": "2023-10-27T10:00:25Z"},
+    {"sensor_id": "A007", "humidity": 65.5, "timestamp": "2023-10-27T10:00:30Z"},
+    {"sensor_id": "A008", "temperature": 22.5, "timestamp": "2023-10-27T10:00:35Z"},
+    {"sensor_id": "A009", "humidity": 58.3, "timestamp": "2023-10-27T10:00:40Z"},
+    {"sensor_id": "A010", "temperature": 23.1, "timestamp": "2023-10-27T10:00:45Z"}
+]

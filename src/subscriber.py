@@ -91,7 +91,13 @@ def consume_and_aggregate_messages(
         return
 
     subscriber = pubsub_v1.SubscriberClient()
-    subscription_path = subscriber.subscription_path(project_id, subscription_id)
+    # Check if the provided subscription_id is already a full path
+    if "projects/" in subscription_id and "/subscriptions/" in subscription_id:
+        subscription_path = subscription_id
+        print(f"Using provided full subscription path: {subscription_path}")
+    else:
+        # Assume it's a short ID and construct the full path
+        subscription_path = subscriber.subscription_path(project_id, subscription_id)
 
     def callback(message: pubsub_v1.subscriber.message.Message) -> None:
         process_and_accumulate_message(message)

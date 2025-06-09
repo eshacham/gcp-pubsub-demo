@@ -28,6 +28,11 @@ output "pubsub_subscription_name_full" {
   value       = google_pubsub_subscription.default_subscription.id
 }
 
+    output "pubsub_subscription_name_short" {
+      description = "Short name (ID) of the Pub/Sub subscription created."
+      value       = google_pubsub_subscription.default_subscription.name
+    }
+    
 output "cloud_function_name" {
   description = "Name of the deployed Cloud Function."
   value       = google_cloudfunctions2_function.default_function.name

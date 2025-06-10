@@ -44,3 +44,15 @@ variable "function_source_dir" {
   type        = string
   default     = "function_source/"
 }
+
+variable "cloud_run_job_name" {
+  description = "Name for the Cloud Run Job that runs the subscriber."
+  type        = string
+  default     = "pubsub-gcs-subscriber-job"
+}
+
+variable "subscriber_docker_image" {
+  description = "The full path to the Docker image for the subscriber (e.g., gcr.io/PROJECT_ID/IMAGE_NAME:TAG)."
+  type        = string
+  # No default, this should be explicitly set or built by a CI/CD pipeline.
+}

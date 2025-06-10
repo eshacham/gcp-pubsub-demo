@@ -42,3 +42,13 @@ output "cloud_function_service_account_email" {
   description = "Email of the service account used by the Cloud Function."
   value       = google_service_account.cf_sa.email
 }
+
+output "cloud_run_job_name" {
+  description = "Name of the deployed Cloud Run Job for the subscriber."
+  value       = google_cloud_run_v2_job.subscriber_job.name
+}
+
+output "cloud_run_job_service_account_email" {
+  description = "Email of the service account used by the Cloud Run Job."
+  value       = google_service_account.cr_job_sa.email
+}

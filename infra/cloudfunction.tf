@@ -28,7 +28,9 @@ resource "google_cloudfunctions2_function" "default_function" {
     timeout_seconds    = 60      # Max 540 for 1st gen, 3600 for 2nd gen HTTP, 60 for event-driven
     environment_variables = {
       GCP_PROJECT_ID  = var.gcp_project_id
-      PUBSUB_TOPIC_ID = google_pubsub_topic.default_topic.name # Pass the actual topic name
+      PUBSUB_TOPIC_ID = google_pubsub_topic.default_topic.name      # Pass the actual topic name
+      CLOUD_RUN_JOB_NAME   = var.cloud_run_job_name                 # Name of the job to trigger
+      CLOUD_RUN_JOB_REGION = var.gcp_region                         # Region of the job to trigger
     }
     ingress_settings               = "ALLOW_ALL" # For GCS (Eventarc) trigger, this is fine. Can be "ALLOW_INTERNAL_ONLY"
     all_traffic_on_latest_revision = true

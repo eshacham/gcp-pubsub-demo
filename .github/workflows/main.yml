@@ -1,0 +1,94 @@
+name: Build Docker Image and Deploy Infrastructure
+
+on:
+  push:
+    branches:
+      - master 
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  build-and-push-subscriber-image:
+    name: Build and Push Subscriber Docker Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write' # Required for Workload Identity Federation
+    outputs:
+      IMAGE_NAME: ${{ steps.store_image_name.outputs.IMAGE_NAME_OUT }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }} # e.g., projects/123456789/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-pool-provider
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }} # e.g., github-actions-runner-sa@github-actions-pool-provider-id.iam.gserviceaccount.com
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker gcr.io # Or your Artifact Registry region, e.g., us-central1-docker.pkg.dev
+
+      - name: Build Docker image
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/pubsub-gcs-subscriber:${{ github.sha }} \
+                       -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/pubsub-gcs-subscriber:latest \
+                       ./src # Context is the ./src directory where Dockerfile and requirements_subscriber.txt are
+
+      - name: Push Docker image
+        run: |
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/pubsub-gcs-subscriber:${{ github.sha }}
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/pubsub-gcs-subscriber:latest
+
+      - name: Set image name output
+        id: store_image_name
+        run: echo "IMAGE_NAME_OUT=gcr.io/${{ secrets.GCP_PROJECT_ID }}/pubsub-gcs-subscriber:${{ github.sha }}" >> $GITHUB_OUTPUT
+
+  deploy-infrastructure:
+    name: Deploy Infrastructure with Terraform
+    runs-on: ubuntu-latest
+    needs: build-and-push-subscriber-image # Ensures this job runs after the image is built
+    permissions:
+      contents: 'read'
+      id-token: 'write' # Required for Workload Identity Federation
+
+    env:
+      # Pass the image name built in the previous job to Terraform
+      TF_VAR_subscriber_docker_image: ${{ needs.build-and-push-subscriber-image.outputs.IMAGE_NAME }}
+
+    defaults:
+      run:
+        working-directory: ./infra # Assuming Terraform files are in 'infra'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.0.0" # Or your desired version, ensure it's compatible with your TF files
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        # Pass gcp_project_id as a var. subscriber_docker_image is passed via TF_VAR_ env var.
+        run: terraform plan -var="gcp_project_id=${{ secrets.GCP_PROJECT_ID }}" -out=tfplan
+        # Note: terraform.tfvars is not explicitly used here for project_id as it's passed directly.
+        # The subscriber_docker_image from terraform.tfvars will be overridden by the TF_VAR_ env var.
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan

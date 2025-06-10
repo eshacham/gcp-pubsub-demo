@@ -42,7 +42,7 @@ variable "cloud_function_name" {
 variable "function_source_dir" {
   description = "Path to the directory containing Cloud Function source code (relative to this Terraform module)."
   type        = string
-  default     = "function_source/"
+  default     = "../src/gcs_to_pubsub_publisher_cf/" # Path relative to the infra directory
 }
 
 variable "cloud_run_job_name" {

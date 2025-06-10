@@ -36,7 +36,7 @@ resource "google_storage_bucket" "function_source_bucket" {
 data "archive_file" "function_source_zip" {
   type        = "zip"
   source_dir  = abspath(var.function_source_dir) # Use absolute path for source_dir
-  output_path = "function_source_${var.cloud_function_name}.zip" # Output to current working directory
+  output_path = ".tmp/function_source_${var.cloud_function_name}.zip" # Output to .tmp subdirectory
 }
 
 resource "google_storage_bucket_object" "function_source_archive" {

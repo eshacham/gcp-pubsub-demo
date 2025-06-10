@@ -36,7 +36,7 @@ jobs:
         run: |
           docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/pubsub-gcs-subscriber:${{ github.sha }} \
                        -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/pubsub-gcs-subscriber:latest \
-                       ./src # Context is the ./src directory where Dockerfile and requirements_subscriber.txt are
+                       ./src/pubsub_subscriber_job # Context is the new subdirectory for the subscriber job
 
       - name: Push Docker image
         run: |

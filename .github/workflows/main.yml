@@ -79,7 +79,8 @@ jobs:
           terraform_version: "1.0.0" # Or your desired version, ensure it's compatible with your TF files
 
       - name: Terraform Init
-        run: terraform init
+        # run: terraform init 
+        run: terraform init -backend-config="bucket=${{ secrets.GCP_STATE_BUCKET_NAME }}"
 
       - name: Terraform Validate
         run: terraform validate

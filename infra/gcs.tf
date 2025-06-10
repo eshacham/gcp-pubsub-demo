@@ -16,6 +16,15 @@ resource "google_storage_bucket" "target_bucket" {
   project                     = var.gcp_project_id
 }
 
+resource "google_storage_bucket" "terraform_state_bucket" {
+  name                        = "${var.gcp_project_id}-${var.state_bucket_name_suffix}-${random_id.bucket_hex.hex}"
+  location                    = var.gcp_region # State bucket should ideally be regional for lower latency
+  uniform_bucket_level_access = true
+  project                     = var.gcp_project_id
+  versioning {                # Enable versioning for safety
+    enabled = true
+  }
+}
 # Bucket for Cloud Function source code
 resource "google_storage_bucket" "function_source_bucket" {
   name                        = "${var.gcp_project_id}-cf-source-${random_id.bucket_hex.hex}"

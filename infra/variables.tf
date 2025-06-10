@@ -21,6 +21,12 @@ variable "target_bucket_name_suffix" {
   default     = "processed-files"
 }
 
+variable "state_bucket_name_suffix" {
+  description = "Suffix for the Terraform state GCS bucket name. Full name will be <project_id>-<suffix>-<random_hex>."
+  type        = string
+  default     = "tfstate"
+}
+
 variable "pubsub_topic_id" {
   description = "The ID for the Pub/Sub topic (e.g., 'gcs-file-events')."
   type        = string

@@ -8,6 +8,11 @@ output "target_gcs_bucket_name" {
   value       = google_storage_bucket.target_bucket.name
 }
 
+output "terraform_state_bucket_name" {
+  description = "Name of the GCS bucket storing the Terraform state."
+  value       = google_storage_bucket.terraform_state_bucket.name
+}
+
 output "function_source_gcs_bucket_name" {
   description = "Name of the GCS bucket holding the Cloud Function source code."
   value       = google_storage_bucket.function_source_bucket.name

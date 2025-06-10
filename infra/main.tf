@@ -7,7 +7,7 @@ terraform {
   }
 
       backend "gcs" {
-        bucket = "pubsub-demo-0518-tfstate-b0f2920b" # This will be set by -backend-config in CI
+        bucket = "" # This will be set by -backend-config in CI
         prefix = "pubsub_demo/terraform.tfstate" # Path within the bucket for this project's state
       }
 
